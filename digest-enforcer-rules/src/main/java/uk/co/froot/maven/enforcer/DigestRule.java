@@ -28,8 +28,8 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import java.util.stream.Collectors;
 
 /**
@@ -135,9 +135,12 @@ public class DigestRule implements EnforcerRule {
 
         try {
 
-            List<String> whitelist = forkJoinPool.submit(() ->
-                    checklist.stream().parallel().map(urn -> checkArtifact(urn)).collect(Collectors.toList())
-            ).get().stream()
+            List<ForkJoinTask<String>> tasks = checklist.stream()
+                    .map(urn -> forkJoinPool.submit(() -> checkArtifact(urn)))
+                    .collect(Collectors.toList());
+
+            List<String> whitelist = tasks.stream()
+                    .map(ForkJoinTask::join)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
@@ -154,7 +157,7 @@ public class DigestRule implements EnforcerRule {
             }
             log.info("</urns>");
 
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             throw new EnforcerRuleException("Failed verifying artifacts.", e);
         }
     }
@@ -233,15 +236,16 @@ public class DigestRule implements EnforcerRule {
         log.info("Verifying dependencies");
 
         try {
-            List<Boolean> results = forkJoinPool.submit(() ->
-                    Arrays.stream(urns).parallel().map(urn -> checkUrn(urn)).collect(Collectors.toList())
-            ).get();
+
+            List<ForkJoinTask<Boolean>> tasks = Arrays.stream(urns).map(urn -> forkJoinPool.submit(() -> checkUrn(urn))).collect(Collectors.toList());
+
+            List<Boolean> results = tasks.stream().map(ForkJoinTask::join).collect(Collectors.toList());
 
             // If any return false, fail verification
             if (results.size() > 0 && results.stream().filter(r -> !r.booleanValue()).findFirst().isPresent()) {
                 throw new EnforcerRuleException("At least one artifact has not met expectations. You should manually verify the integrity of the affected artifacts against trusted sources.");
             }
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             throw new EnforcerRuleException("Failed verifying artifacts.", e);
         }
     }
