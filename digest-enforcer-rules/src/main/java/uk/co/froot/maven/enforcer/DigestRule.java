@@ -144,9 +144,6 @@ public class DigestRule implements EnforcerRule {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
-            if (whitelist.size() != checklist.size())
-                throw new EnforcerRuleException("Some artifacts failed verification");
-
             // Provide the list in a natural order
             Collections.sort(whitelist);
 
