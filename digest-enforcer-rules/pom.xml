@@ -16,9 +16,9 @@
   <description>A collection of rules for the Maven Enforcer Plugin that protect against dependency-chain attacks on the build process.</description>
 
   <properties>
-    <api.version>1.2</api.version>
+    <api.version>3.0.0-M2</api.version>
     <!-- Set this as high as possible and rely on the compatibility library -->
-    <maven.version>3.0.3</maven.version>
+    <maven.version>3.5.4</maven.version>
   </properties>
 
   <dependencies>

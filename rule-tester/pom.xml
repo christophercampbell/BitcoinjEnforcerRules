@@ -21,7 +21,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.2</version>
+        <version>3.0.0-M2</version>
         <executions>
           <execution>
             <id>enforce</id>
@@ -32,6 +32,8 @@
             <configuration>
               <rules>
                 <digestRule implementation="uk.co.froot.maven.enforcer.DigestRule">
+                  <!-- how many artifact files to work on at a time -->
+                  <concurrency>16</concurrency>
 
                   <!-- Create a snapshot  -->
                   <buildSnapshot>true</buildSnapshot>

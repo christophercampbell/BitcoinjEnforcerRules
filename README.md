@@ -79,6 +79,9 @@ when including it into your project.
                     <urn>uk.co.froot.maven.enforcer:digest-enforcer-rules:0.0.1:jar:null:runtime:16a9e04f3fe4bb143c42782d07d5faf65b32106f</urn>
 
                   </urns>
+                  
+                  <!-- Work on N artifacts at a time, 4 by default -->
+                  <concurrency>8</concurrency>
 
                 </digestRule>
               </rules>
