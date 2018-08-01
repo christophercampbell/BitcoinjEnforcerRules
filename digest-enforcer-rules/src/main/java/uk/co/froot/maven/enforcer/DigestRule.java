@@ -199,7 +199,7 @@ public class DigestRule implements EnforcerRule {
             if (digestFile.exists()) {
                 // SHA1 is 40 characters in hex
                 digestExpected = FileUtils.fileRead(digestFile).substring(0, 40);
-                log.debug(String.format("Found SHA-1: %s", digestExpected));
+                log.debug("Found SHA-1: " + digestExpected);
             }
 
             // Generate actual
@@ -279,12 +279,12 @@ public class DigestRule implements EnforcerRule {
             resolveArtifact(artifact);
             String actual = digest(artifact.getFile());
             if (!actual.equals(hash)) {
-                log.error("*** CRITICAL FAILURE *** Artifact does not match. Possible dependency-chain attack. Expected='" + hash + "' Actual='" + actual + "'");
+                log.error("*** CRITICAL FAILURE *** Artifact " + urn + " does not match. Possible dependency-chain attack. Expected='" + hash + "' Actual='" + actual + "'");
                 return false;
             }
             return true;
         } catch (EnforcerRuleException e) {
-            log.error("URN failed", e);
+            log.error("URN " + urn + " failed", e);
             return false;
         }
     }
